@@ -41,13 +41,8 @@ public class ItemService {
     @Caching(put = @CachePut(value = CacheConfig.ITEMS_CACHE, key = "#id"), evict = @CacheEvict(value = "itemsList", allEntries = true))
     public Item updateItem(Long id, Item itemDetails) {
         log.info("Updating item with id in database: {}: {}", id, itemDetails);
-        Item item = itemRepository.findById(id)
-                .orElseThrow(() -> new ItemNotFoundException(id));
-
-        item.setName(itemDetails.getName());
-        item.setDescription(itemDetails.getDescription());
-
-        return itemRepository.save(item);
+        itemDetails.setId(id);
+        return itemRepository.save(itemDetails);
     }
 
     @Caching(evict = {

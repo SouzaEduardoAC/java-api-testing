@@ -49,4 +49,11 @@ public class ItemController {
         log.info("Deleting item with id: {}", id);
         itemService.deleteItem(id);
     }
+
+    @ExceptionHandler(org.springframework.orm.ObjectOptimisticLockingFailureException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public String handleOptimisticLockingFailure(org.springframework.orm.ObjectOptimisticLockingFailureException ex) {
+        log.warn("Optimistic locking failure: {}", ex.getMessage());
+        return "Conflict: The item was updated by another transaction. Please retrieve the latest version and try again.";
+    }
 }

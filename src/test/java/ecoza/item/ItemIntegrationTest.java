@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import lombok.extern.slf4j.Slf4j;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -18,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@Slf4j
 class ItemIntegrationTest {
 
     @Autowired
@@ -36,7 +38,7 @@ class ItemIntegrationTest {
 
     @Test
     void createAndGetItem() throws Exception {
-        Item newItem = new Item(null, "Integration Test Item", "Description for integration test");
+        Item newItem = new Item(null, "Integration Test Item", "Description for integration test", null);
 
         mockMvc.perform(post("/api/items")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -54,10 +56,10 @@ class ItemIntegrationTest {
 
     @Test
     void updateItem() throws Exception {
-        Item existingItem = new Item(null, "Original Item", "Original Description");
+        Item existingItem = new Item(null, "Original Item", "Original Description", null);
         Item savedItem = itemRepository.save(existingItem);
 
-        Item updatedDetails = new Item(null, "Updated Integration Item", "Updated Description");
+        Item updatedDetails = new Item(savedItem.getId(), "Updated Integration Item", "Updated Description", savedItem.getVersion());
 
         mockMvc.perform(put("/api/items/{id}", savedItem.getId())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -74,7 +76,7 @@ class ItemIntegrationTest {
 
     @Test
     void deleteItem() throws Exception {
-        Item existingItem = new Item(null, "Item to Delete", "Description to Delete");
+        Item existingItem = new Item(null, "Item to Delete", "Description to Delete", null);
         Item savedItem = itemRepository.save(existingItem);
 
         mockMvc.perform(delete("/api/items/{id}", savedItem.getId())
@@ -84,5 +86,31 @@ class ItemIntegrationTest {
         mockMvc.perform(get("/api/items/{id}", savedItem.getId())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testOptimisticLockingFailure() throws Exception {
+        // Create an item
+        Item initialItem = new Item(null, "Optimistic Lock Item", "Initial Description", null);
+        Item savedItem = itemRepository.save(initialItem);
+
+        // Simulate two concurrent retrievals
+        Item item1 = itemRepository.findById(savedItem.getId()).orElseThrow();
+        Item item2 = itemRepository.findById(savedItem.getId()).orElseThrow();
+
+        // First update (successful)
+        item1.setName("Updated by Transaction 1");
+        mockMvc.perform(put("/api/items/{id}", item1.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(item1)))
+                .andExpect(status().isOk());
+        Item item1AfterUpdate = itemRepository.findById(savedItem.getId()).orElseThrow();
+
+        // Second update with outdated version (should fail)
+        item2.setName("Updated by Transaction 2");
+        mockMvc.perform(put("/api/items/{id}", item2.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(item2)))
+                .andExpect(status().isConflict());
     }
 }

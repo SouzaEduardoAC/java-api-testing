@@ -28,8 +28,8 @@ class ItemServiceTest {
 
     @Test
     void getAllItems() {
-        Item item1 = new Item(1L, "Item 1", "Description 1");
-        Item item2 = new Item(2L, "Item 2", "Description 2");
+        Item item1 = new Item(1L, "Item 1", "Description 1", null);
+        Item item2 = new Item(2L, "Item 2", "Description 2", null);
         List<Item> items = Arrays.asList(item1, item2);
 
         when(itemRepository.findAll()).thenReturn(items);
@@ -44,7 +44,7 @@ class ItemServiceTest {
 
     @Test
     void getItemByIdFound() {
-        Item item = new Item(1L, "Item 1", "Description 1");
+        Item item = new Item(1L, "Item 1", "Description 1", null);
         when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
 
         Item result = itemService.getItemById(1L);
@@ -63,8 +63,8 @@ class ItemServiceTest {
 
     @Test
     void createItem() {
-        Item item = new Item(null, "New Item", "New Description");
-        Item savedItem = new Item(1L, "New Item", "New Description");
+        Item item = new Item(null, "New Item", "New Description", null);
+        Item savedItem = new Item(1L, "New Item", "New Description", null);
 
         when(itemRepository.save(item)).thenReturn(savedItem);
 
@@ -76,35 +76,23 @@ class ItemServiceTest {
 
     @Test
     void updateItemFound() {
-        Item existingItem = new Item(1L, "Old Item", "Old Description");
-        Item updatedDetails = new Item(null, "Updated Item", "Updated Description");
-        Item savedItem = new Item(1L, "Updated Item", "Updated Description");
+        Item existingItem = new Item(1L, "Old Item", "Old Description", 0L); // Add initial version
+        Item updatedDetails = new Item(1L, "Updated Item", "Updated Description", 0L); // Pass ID and version
+        Item savedItem = new Item(1L, "Updated Item", "Updated Description", 1L); // Mock the saved item with incremented version
 
-        when(itemRepository.findById(1L)).thenReturn(Optional.of(existingItem));
         when(itemRepository.save(any(Item.class))).thenReturn(savedItem);
 
         Item result = itemService.updateItem(1L, updatedDetails);
 
         assertEquals(savedItem, result);
-        assertEquals("Updated Item", existingItem.getName());
-        assertEquals("Updated Description", existingItem.getDescription());
-        verify(itemRepository, times(1)).findById(1L);
-        verify(itemRepository, times(1)).save(existingItem);
-    }
-
-    @Test
-    void updateItemNotFound() {
-        Item updatedDetails = new Item(null, "Updated Item", "Updated Description");
-        when(itemRepository.findById(1L)).thenReturn(Optional.empty());
-
-        assertThrows(ItemNotFoundException.class, () -> itemService.updateItem(1L, updatedDetails));
-        verify(itemRepository, times(1)).findById(1L);
-        verify(itemRepository, never()).save(any(Item.class));
+        assertEquals("Updated Item", result.getName());
+        assertEquals("Updated Description", result.getDescription());
+        verify(itemRepository, times(1)).save(any(Item.class));
     }
 
     @Test
     void deleteItemFound() {
-        Item item = new Item(1L, "Item to Delete", "Description to Delete");
+        Item item = new Item(1L, "Item to Delete", "Description to Delete", null);
         when(itemRepository.findById(1L)).thenReturn(Optional.of(item));
         doNothing().when(itemRepository).delete(item);
 

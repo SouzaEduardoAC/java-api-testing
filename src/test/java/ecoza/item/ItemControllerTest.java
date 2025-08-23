@@ -39,8 +39,8 @@ class ItemControllerTest {
 
     @Test
     void createItem() throws Exception {
-        Item newItem = new Item(null, "Test Item", "Test Description");
-        Item savedItem = new Item(1L, "Test Item", "Test Description");
+        Item newItem = new Item(null, "Test Item", "Test Description", null);
+        Item savedItem = new Item(1L, "Test Item", "Test Description", null);
 
         when(itemService.createItem(any(Item.class))).thenReturn(savedItem);
 
@@ -56,8 +56,8 @@ class ItemControllerTest {
 
     @Test
     void getAllItems() throws Exception {
-        Item item1 = new Item(1L, "Item 1", "Description 1");
-        Item item2 = new Item(2L, "Item 2", "Description 2");
+        Item item1 = new Item(1L, "Item 1", "Description 1", null);
+        Item item2 = new Item(2L, "Item 2", "Description 2", null);
         when(itemService.getAllItems()).thenReturn(Arrays.asList(item1, item2));
 
         mockMvc.perform(get("/api/items")
@@ -71,7 +71,7 @@ class ItemControllerTest {
 
     @Test
     void getItemByIdFound() throws Exception {
-        Item item = new Item(1L, "Test Item", "Test Description");
+        Item item = new Item(1L, "Test Item", "Test Description", null);
         when(itemService.getItemById(1L)).thenReturn(item);
 
         mockMvc.perform(get("/api/items/{id}", 1L)
@@ -96,8 +96,8 @@ class ItemControllerTest {
 
     @Test
     void updateItem() throws Exception {
-        Item updatedDetails = new Item(null, "Updated Item", "Updated Description");
-        Item updatedItem = new Item(1L, "Updated Item", "Updated Description");
+        Item updatedDetails = new Item(null, "Updated Item", "Updated Description", null);
+        Item updatedItem = new Item(1L, "Updated Item", "Updated Description", null);
 
         when(itemService.updateItem(any(Long.class), any(Item.class))).thenReturn(updatedItem);
 
