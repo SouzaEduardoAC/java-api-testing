@@ -1,68 +1,89 @@
-# Sample REST API Service
+# Sample API Service
 
-This project is a sample REST API service built with Spring Boot. It provides a complete, layered application architecture for managing "Items," demonstrating best practices for building modern web services.
+This project is a sample Spring Boot application demonstrating a RESTful API for managing items. It includes features such as data persistence with PostgreSQL, caching with Redis, and API documentation with SpringDoc OpenAPI.
+
+## Technologies Used
+
+*   **Java**: 21
+*   **Spring Boot**: 3.3.1
+*   **Maven**: Dependency management and build automation
+*   **Spring Data JPA**: For database interaction
+*   **PostgreSQL**: Primary database
+*   **H2 Database**: In-memory database for testing
+*   **Spring Data Redis**: For caching
+*   **Lombok**: To reduce boilerplate code
+*   **SpringDoc OpenAPI**: For API documentation (Swagger UI)
+*   **Docker/Docker Compose**: For containerization (optional, but `Dockerfile` and `docker-compose.yml` are present)
 
 ## Features
 
-- **RESTful API**: Full CRUD (Create, Read, Update, Delete) operations for managing items.
-- **Spring Boot 3**: Utilizes the latest features for rapid, convention-over-configuration development.
-- **PostgreSQL Database**: Uses Spring Data JPA for robust, persistent storage.
-- **Redis Cache**: Implements a caching layer with Spring Cache and Redis to improve performance and reduce database load.
-- **API Documentation**: Integrated Swagger UI (via springdoc-openapi) for interactive API documentation and testing.
-- **Containerized**: Fully containerized with Docker and Docker Compose for easy, consistent setup and deployment.
-- **Input Validation**: Ensures data integrity for incoming requests.
-- **CORS Configuration**: Global CORS policy to allow cross-origin requests from frontend applications.
+*   **CRUD Operations for Items**:
+    *   Create new items
+    *   Retrieve items by ID or all items
+    *   Update existing items
+    *   Delete items
+*   **Caching**: Utilizes Redis to cache item data for improved performance.
+*   **API Documentation**: Automatically generated API documentation available via Swagger UI.
+*   **Validation**: Request payload validation.
 
-## Prerequisites
+## Getting Started
 
-Before you begin, ensure you have the following installed on your system:
-- [Docker](https://www.docker.com/get-started)
-- [Docker Compose](https://docs.docker.com/compose/install/) (typically included with Docker Desktop)
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
-## How to Run the Application
+### Prerequisites
 
-You can run the entire application stack (Spring Boot App, PostgreSQL, Redis) with a single command.
+*   Java Development Kit (JDK) 21
+*   Maven 3.x
+*   Docker and Docker Compose (optional, for running PostgreSQL and Redis in containers)
 
-1.  **Clone the repository** (if you haven't already).
+### Building the Project
 
-2.  **Start the services using Docker Compose**:
-    From the root directory of the project, run the following command:
-    ```sh
-    docker-compose up --build
-    ```
-    This command will:
-    - Build the Docker image for the Spring Boot application.
-    - Start containers for the application, a PostgreSQL database, and a Redis instance.
-    - Link the services on a shared network.
+To build the project, navigate to the root directory of the project and run:
 
-The API will be running and accessible on port 80 of your local machine.
+```bash
+mvn clean install
+```
 
-## Accessing the API
+### Running the Project
 
-### API Endpoints
+#### 1. Using Docker Compose (Recommended for local development)
 
-The API is available at `http://localhost/api/items`. You can use tools like `curl` or Postman to interact with it.
+Ensure Docker and Docker Compose are installed. This will start PostgreSQL and Redis containers, and then the Spring Boot application.
 
-- **Create an Item:**
-  ```sh
-  curl -X POST http://localhost/api/items \
-  -H "Content-Type: application/json" \
-  -d '{"name": "My First Item", "description": "This is a test item."}'
-  ```
+```bash
+docker-compose up --build
+```
 
-- **Get All Items:**
-  ```sh
-  curl http://localhost/api/items
-  ```
+The application will be accessible at `http://localhost:80`.
 
-- **Delete an Item (e.g., with ID 1):**
-  ```sh
-  curl -X DELETE http://localhost/api/items/1
-  ```
+#### 2. Running Locally (Requires local PostgreSQL and Redis instances)
 
-### Swagger UI API Documentation
+If you have PostgreSQL and Redis running locally and configured as per `src/main/resources/application.properties`, you can run the application directly:
 
-For interactive API documentation, open your web browser and navigate to:
-**http://localhost/swagger-ui.html**
+```bash
+mvn spring-boot:run
+```
 
-Here you can view all available endpoints, see their request/response models, and execute API calls directly from the browser.
+The application will be accessible at `http://localhost:80`.
+
+## API Endpoints
+
+The API documentation is available via Swagger UI once the application is running:
+
+*   **Swagger UI**: `http://localhost:80/swagger-ui.html`
+
+Common endpoints for `Item` resource:
+
+*   `GET /api/items`: Get all items
+*   `GET /api/items/{id}`: Get item by ID
+*   `POST /api/items`: Create a new item
+*   `PUT /api/items/{id}`: Update an existing item
+*   `DELETE /api/items/{id}`: Delete an item
+
+## Testing
+
+To run the unit and integration tests, execute the following command in the project root directory:
+
+```bash
+mvn test
+```
