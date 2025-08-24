@@ -22,8 +22,12 @@
     <div class="item-list">
       <h2>Items</h2>
       <div v-if="loading">Loading...</div>
+      <div v-else-if="!sortedItems.length">
+        <p>No items found. Create one above!</p>
+      </div>
       <ul v-else>
-        <li v-for="i in items" :key="i.id">
+        <!-- Use the new sortedItems computed property for the list -->
+        <li v-for="i in sortedItems" :key="i.id">
           <div class="item-details">
             <strong>{{ i.name }}</strong>
             <p>{{ i.description }}</p>
@@ -58,6 +62,12 @@ export default {
       loading: false,
       error: null
     };
+  },
+  computed: {
+    sortedItems() {
+      // Create a shallow copy of the items array and sort it alphabetically by name
+      return [...this.items].sort((a, b) => a.name.localeCompare(b.name));
+    }
   },
   created() {
     this.fetchItems();
@@ -182,13 +192,17 @@ export default {
 .item-list li {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 15px;
   border-bottom: 1px solid #eee;
 }
 
 .item-list li:last-child {
   border-bottom: none;
+}
+
+.item-details {
+  text-align: justify;
 }
 
 .item-details p {
