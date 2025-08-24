@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: 'http://localhost:8080/api/items', // Adjust if your backend URL is different
+  baseURL: '/api', // Use relative path for proxying through Nginx
   headers: {
     'Content-Type': 'application/json'
   }
@@ -9,18 +9,18 @@ const apiClient = axios.create({
 
 export default {
   getItems() {
-    return apiClient.get('/');
+    return apiClient.get('/items');
   },
   getItem(id) {
-    return apiClient.get(`/${id}`);
+    return apiClient.get(`/items/${id}`);
   },
   createItem(data) {
-    return apiClient.post('/', data);
+    return apiClient.post('/items', data);
   },
   updateItem(id, data) {
-    return apiClient.put(`/${id}`, data);
+    return apiClient.put(`/items/${id}`, data);
   },
   deleteItem(id) {
-    return apiClient.delete(`/${id}`);
+    return apiClient.delete(`/items/${id}`);
   }
 };
