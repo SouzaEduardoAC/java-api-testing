@@ -1,4 +1,4 @@
-# sample-app-web
+# sample-web-app
 
 ## Project setup
 ```
