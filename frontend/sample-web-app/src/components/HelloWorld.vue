@@ -52,7 +52,8 @@ export default {
       item: {
         id: null,
         name: '',
-        description: ''
+        description: '',
+        version: null
       },
       loading: false,
       error: null
@@ -82,7 +83,8 @@ export default {
       this.item = {
         id: null,
         name: '',
-        description: ''
+        description: '',
+        version: null
       };
     },
     async saveItem() {
@@ -102,7 +104,11 @@ export default {
         this.resetForm();
         await this.fetchItems();
       } catch (err) {
-        this.error = `Failed to ${this.item.id ? 'update' : 'create'} item.`;
+        if (err.response && err.response.status === 409) {
+          this.error = err.response.data;
+        } else {
+          this.error = `Failed to ${this.item.id ? 'update' : 'create'} item.`;
+        }
         console.error(err);
       }
     },
