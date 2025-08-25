@@ -1,10 +1,10 @@
 # Sample API Service
 
-This project is a sample Spring Boot application demonstrating a RESTful API for managing items. It includes features such as data persistence with PostgreSQL, caching with Redis, and API documentation with SpringDoc OpenAPI.
+This project is the backend for the Sample Full-Stack Application. It's a Spring Boot application demonstrating a RESTful API for managing items. It includes features such as data persistence with PostgreSQL, caching with Redis, optimistic locking, and API documentation with SpringDoc OpenAPI.
 
 ## Technologies Used
 
-*   **Java**: 21
+*   **Java**: 21 / Jakarta EE
 *   **Spring Boot**: 3.3.1
 *   **Maven**: Dependency management and build automation
 *   **Spring Data JPA**: For database interaction
